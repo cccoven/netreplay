@@ -1,0 +1,3 @@
+/Users/coven/CLionProjects/netreplay/cmake-build-debug/CMakeFiles/netreplay.dir
+/Users/coven/CLionProjects/netreplay/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/coven/CLionProjects/netreplay/cmake-build-debug/CMakeFiles/rebuild_cache.dir
