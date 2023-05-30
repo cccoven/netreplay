@@ -30,3 +30,7 @@
 *.exe
 *.out
 *.app
+
+# Dictionaries
+/build
+/cmake-build-debug
