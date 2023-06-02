@@ -949,7 +949,7 @@ inline ArguDesc ParseArgument(const char *arg, bool &matched)
             value = text;
         }
 
-// The fallback msgparser. It uses the stringstream msgparser to parse all types
+// The fallback message. It uses the stringstream message to parse all types
 // that have not been overloaded explicitly.  It has to be placed in the
 // source code before all other more specialized templates.
         template<typename T,

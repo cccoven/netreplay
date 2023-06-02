@@ -50,7 +50,7 @@ void Capturer::find_net_devs() {
             continue;
         }
 
-        pcap_if_t *n = new pcap_if;
+        auto *n = new pcap_if;
         memcpy(n, dev, sizeof(pcap_if_t));
         n->next = net_dev;
         net_dev = n;
@@ -60,9 +60,9 @@ void Capturer::find_net_devs() {
 string Capturer::build_filter_text() {
     string filter_text = transport;
     if (!host.empty()) {
-        filter_text += " and host " + host;
+        filter_text += " and dst host " + host;
     }
-    filter_text += " and port " + to_string(port);
+    filter_text += " and dst port " + to_string(port);
     if (!config.bpf_filter.empty()) {
         filter_text += " and " + config.bpf_filter;
     }

@@ -1,6 +1,6 @@
 CXX = g++
 CXXFLAGS = -std=c++11
-INCLUDES = -Isrc/include
+INCLUDES = -Isrc/include -I/usr/local/include
 LIBS = -l pcap -l pthread -l tins
 
 SRCS = $(shell find src -name '*.cpp') 

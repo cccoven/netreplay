@@ -1,6 +1,6 @@
 #include <iostream>
 #include "settings.h"
-#include "plugins/pluginchain.h"
+#include "plugin/pluginchain.h"
 
 using namespace std;
 

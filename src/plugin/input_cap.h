@@ -1,5 +1,5 @@
-#ifndef INPUT_CAP
-#define INPUT_CAP
+#ifndef NETREPLAY_INPUT_CAP
+#define NETREPLAY_INPUT_CAP
 
 #include "pluginchain.h"
 #include "../settings.h"

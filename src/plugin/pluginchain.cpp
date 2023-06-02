@@ -5,7 +5,7 @@
 using namespace std;
 
 PluginChain::PluginChain(Settings &settings) {
-    for (const string &raw: settings.input_cap) {
+    for (const auto &raw: settings.input_cap) {
         InputCap input_raw = InputCap(raw, settings.input_cap_config);
         inputs.push_back(&input_raw);
     }

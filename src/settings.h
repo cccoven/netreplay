@@ -1,5 +1,5 @@
-#ifndef SETTINGS_H
-#define SETTINGS_H
+#ifndef NETREPLAY_SETTINGS_H
+#define NETREPLAY_SETTINGS_H
 
 #include <iostream>
 #include <string>

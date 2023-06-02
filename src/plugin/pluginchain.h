@@ -1,5 +1,5 @@
-#ifndef PLUGINCHAIN_H
-#define PLUGINCHAIN_H
+#ifndef NETREPLAY_PLUGINCHAIN_H
+#define NETREPLAY_PLUGINCHAIN_H
 
 #include <list>
 #include "../settings.h"
