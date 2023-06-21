@@ -2,12 +2,12 @@
 #include "input_cap.h"
 #include "output_stdout.h"
 
-using namespace std;
+#include <iostream>
 
 PluginChain::PluginChain(Settings &settings) {
     for (const auto &raw: settings.input_cap) {
-        InputCap input_raw = InputCap(raw, settings.input_cap_config);
-        inputs.push_back(&input_raw);
+        auto input_raw = std::shared_ptr<InPlugin>(new InputCap(raw, settings.input_cap_config));
+        inputs.push_back(input_raw);
     }
 
     if (settings.output_stdout) {
@@ -16,4 +16,6 @@ PluginChain::PluginChain(Settings &settings) {
     }
 }
 
-PluginChain::~PluginChain() = default;
+PluginChain::~PluginChain() {
+    std::cout << "PluginChain destructor" << std::endl;
+};

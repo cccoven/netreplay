@@ -2,9 +2,8 @@
 #define NETREPLAY_PLUGINCHAIN_H
 
 #include <list>
-#include "../settings.h"
 
-using namespace std;
+#include "../settings.h"
 
 struct RawMessage {
     unsigned char *data;
@@ -28,8 +27,8 @@ public:
     ~PluginChain();
 
 public:
-    list<InPlugin *> inputs;
-    list<OutPlugin *> outputs;
+    std::list<std::shared_ptr<InPlugin>> inputs;
+    std::list<OutPlugin *> outputs;
 };
 
 #endif

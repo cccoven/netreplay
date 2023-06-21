@@ -1,11 +1,14 @@
-#include "capture.h"
-#include <pcap.h>
+#include <iostream>
 #include <cstdlib>
 #include <memory>
+#include <thread>
+#include <pcap.h>
 
-using namespace std;
+#include "capture.h"
+#include "../message/tcp/parser.h"
 
-Capturer::Capturer(const string &hst, const uint16_t &pt, pcap_option option) {
+Capturer::Capturer(const std::string &hst, const uint16_t &pt, pcap_option &option) {
+    host = hst;
     if (hst == "localhost") {
         host = "127.0.0.1";
     }
@@ -17,22 +20,20 @@ Capturer::Capturer(const string &hst, const uint16_t &pt, pcap_option option) {
         find_net_devs();
         prepare_handles();
     } catch (char *e) {
-        cerr << e << endl;
+        std::cerr << e << std::endl;
         exit(EXIT_FAILURE);
     }
 }
 
 Capturer::~Capturer() {
-    pcap_freealldevs(net_dev_all);
-    delete net_dev;
-    for (auto &handle: handles) {
-        pcap_close(handle.second.handle);
-    }
-    handles.clear();
+    std::cout << "Capturer destructor" << std::endl;
+    pcap_freealldevs(net_dev);
+    net_dev = nullptr;
 }
 
 void Capturer::find_net_devs() {
     char errbuf[PCAP_ERRBUF_SIZE];
+    pcap_if_t *net_dev_all;
     int e = pcap_findalldevs(&net_dev_all, errbuf);
     if (e == PCAP_ERROR) {
         throw errbuf;
@@ -40,7 +41,7 @@ void Capturer::find_net_devs() {
 
     for (pcap_if_t *dev = net_dev_all; dev != nullptr; dev = dev->next) {
         bool ign = false;
-        for (const string &ig_dev: config.ignore_interfaces) {
+        for (const std::string &ig_dev: config.ignore_interfaces) {
             if (ig_dev == dev->name) {
                 ign = true;
                 break;
@@ -51,18 +52,18 @@ void Capturer::find_net_devs() {
         }
 
         auto *n = new pcap_if;
-        memcpy(n, dev, sizeof(pcap_if_t));
+        std::memcpy(n, dev, sizeof(pcap_if_t));
         n->next = net_dev;
         net_dev = n;
     }
 }
 
-string Capturer::build_filter_text() {
-    string filter_text = transport;
+std::string Capturer::build_filter_text() {
+    std::string filter_text = transport;
     if (!host.empty()) {
         filter_text += " and dst host " + host;
     }
-    filter_text += " and dst port " + to_string(port);
+    filter_text += " and dst port " + std::to_string(port);
     if (!config.bpf_filter.empty()) {
         filter_text += " and " + config.bpf_filter;
     }
@@ -80,31 +81,77 @@ void Capturer::prepare_handles() {
         pcap_activate(handle);
 
         bpf_program filter = {};
-        const string filter_str = build_filter_text();
+        const std::string filter_str = build_filter_text();
         int ri = pcap_compile(handle, &filter, filter_str.c_str(), 1, PCAP_NETMASK_UNKNOWN);
         if (ri == PCAP_ERROR) {
             throw pcap_geterr(handle);;
         }
         pcap_setfilter(handle, &filter);
-        cout << "dev: " << dev->name << ", bpf filter: " << filter_str << endl;
+        std::cout << "dev: " << dev->name << ", bpf filter: " << filter_str << std::endl;
 
-        pkt_handle pkthdr = {};
-        pkthdr.handle = handle;
-        pkthdr.ips = dev->addresses;
+        handles.emplace(dev->name, pkt_handle{dev->addresses, handle});
 
         // for (pcap_addr_t *paddr = dev->addresses; paddr != nullptr; paddr = paddr->next) {
         //     if (paddr->addr->sa_family == AF_INET) {
         //         sockaddr_in *sa = (sockaddr_in *) paddr->addr;
-        //         cout << dev->name << ", " << "IPv4: " << inet_ntoa(sa->sin_addr) << endl;
+        //         std::cout << dev->name << ", " << "IPv4: " << inet_ntoa(sa->sin_addr) << std::endl;
         //     }
         //     if (paddr->addr->sa_family == AF_INET6) {
         //         sockaddr_in6 *sa = (sockaddr_in6 *) paddr->addr;
         //         char str[INET6_ADDRSTRLEN];
-        //         cout << dev->name << ", " << "IPv6: " << inet_ntop(AF_INET6, &sa->sin6_addr, str, INET6_ADDRSTRLEN)
-        //              << endl;
+        //         std::cout << dev->name << ", " << "IPv6: " << inet_ntop(AF_INET6, &sa->sin6_addr, str, INET6_ADDRSTRLEN)
+        //              << std::endl;
         //     }
         // }
-
-        handles.emplace(dev->name, pkthdr);
     }
+}
+
+void Capturer::read_handle(const std::string &key, pcap_t *handle) {
+    auto parser = std::make_shared<Parser>(messages);
+
+    int link_size = 14;
+    int link_type = pcap_datalink(handle);
+    switch (link_type) {
+        case DLT_EN10MB:
+            link_size = 14;
+            break;
+        case DLT_NULL:
+            link_size = 4;
+            break;
+        default:
+            break;
+    }
+
+    pcap_pkthdr *pkthdr;
+    const u_char *pktdata;
+
+    while (true) {
+        int err = pcap_next_ex(handle, &pkthdr, &pktdata);
+        // buffer timeout expired
+        if (err == 0) {
+            continue;
+        }
+        if (err == EOF) {
+            break;
+        }
+
+        auto pkt = std::make_shared<RawPacket>(link_type, link_size, pkthdr, pktdata);
+        parser->packet_handler(pkt);
+    }
+
+    close_handle(key, handle);
+}
+
+void Capturer::start() {
+    for (auto &wrapper: handles) {
+        pcap_t *handle = wrapper.second.handle;
+
+        std::thread handle_worker(&Capturer::read_handle, this, wrapper.first, handle);
+        handle_worker.detach();
+    }
+}
+
+void Capturer::close_handle(const std::string &key, pcap_t *handle) {
+    pcap_close(handle);
+    handles.erase(key);
 }

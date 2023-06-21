@@ -1,7 +1,7 @@
 CXX = g++
 CXXFLAGS = -std=c++11
 INCLUDES = -Isrc/include -I/usr/local/include
-LIBS = -l pcap -l pthread -l tins
+LIBS = -l pcap -l tins
 
 SRCS = $(shell find src -name '*.cpp') 
 TARGET = netreplay

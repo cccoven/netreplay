@@ -2,9 +2,8 @@
 #define NETREPLAY_MESSAGE_H
 
 #include <deque>
-#include "packet.h"
 
-using namespace std;
+#include "packet.h"
 
 class Message {
 public:
@@ -12,8 +11,10 @@ public:
 
     ~Message();
 
+    void add(TcpPacket &tcp_pkt);
+
 public:
-    deque<TcpPacket> packets;
+    std::deque<TcpPacket> packets;
 };
 
 #endif

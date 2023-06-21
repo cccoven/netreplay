@@ -17,10 +17,10 @@ Settings::~Settings() {};
 void Settings::parse_args(int argc, char *argv[]) {
     cxxopts::Options options(argv[0]);
     options.add_options()
-            ("input-cap", "input cap", cxxopts::value<vector<string>>())
+            ("input-cap", "input cap", cxxopts::value<std::vector<std::string>>())
             ("output-stdout", "output stdout", cxxopts::value<bool>());
 
     cxxopts::ParseResult result = options.parse(argc, argv);
-    input_cap = result["input-cap"].as<vector<string>>();
+    input_cap = result["input-cap"].as<std::vector<std::string>>();
     output_stdout = result["output-stdout"].as<bool>();
 }

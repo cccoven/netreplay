@@ -1,14 +1,12 @@
 #ifndef NETREPLAY_SETTINGS_H
 #define NETREPLAY_SETTINGS_H
 
-#include <iostream>
 #include <string>
 #include <vector>
+
 #include "./capture/capture.h"
 
-using namespace std;
-
-typedef struct pcap_option input_cap_config;
+using input_cap_config = pcap_option;
 
 class Settings {
 public:
@@ -19,7 +17,7 @@ public:
     void parse_args(int argc, char *argv[]);
 
 public:
-    vector<string> input_cap;
+    std::vector<std::string> input_cap;
     input_cap_config input_cap_config;
     bool output_stdout;
 };

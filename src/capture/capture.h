@@ -1,23 +1,22 @@
 #ifndef NETREPLAY_CAPTURE_H
 #define NETREPLAY_CAPTURE_H
 
-#include <iostream>
 #include <deque>
-#include <pcap.h>
 #include <vector>
 #include <map>
-#include "../message/tcp/message.h"
+#include <string>
+#include <pcap.h>
 
-using namespace std;
+#include "../message/tcp/message.h"
 
 struct pcap_option {
     int timeout;
-    string bpf_filter;
+    std::string bpf_filter;
     bool promisc;
     bool monitor;
     int snaplen;
-    vector<string> ignore_interfaces;
-    string transport;
+    std::vector<std::string> ignore_interfaces;
+    std::string transport;
 };
 
 struct pkt_handle {
@@ -27,7 +26,7 @@ struct pkt_handle {
 
 class Capturer {
 public:
-    Capturer(const string &hst, const uint16_t &pt, pcap_option option);
+    Capturer(const std::string &hst, const uint16_t &pt, pcap_option &option);
 
     ~Capturer();
 
@@ -35,20 +34,23 @@ public:
 
     void prepare_handles();
 
+    void start();
+
 private:
-    string build_filter_text();
+    std::string build_filter_text();
+
+    void read_handle(const std::string &key, pcap_t *handle);
+
+    void close_handle(const std::string &key, pcap_t *handle);
 
 public:
-    string host;
+    std::string host;
     uint16_t port;
-    string transport;
-    deque<Message> messages;
+    std::string transport;
+    std::deque<std::shared_ptr<Message>> messages;
     pcap_option config;
     pcap_if_t *net_dev;
-    map<string, pkt_handle> handles;
-
-private:
-    pcap_if_t *net_dev_all;
+    std::map<std::string, pkt_handle> handles;
 };
 
 #endif
