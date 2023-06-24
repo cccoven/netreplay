@@ -16,7 +16,12 @@ void Emitter::start() {
 
 void Emitter::deliver_multiple(std::shared_ptr<InPlugin> &in, std::vector<std::shared_ptr<OutPlugin>> &outputs) {
     while (true) {
-        in->read();
+        RawMessage msg = in->read();
+        std::cout << "msg.data.size = " << msg.data.size() << std::endl;
+
+        for (auto &out: outputs) {
+            out->write(msg);
+        }
     }
 }
 

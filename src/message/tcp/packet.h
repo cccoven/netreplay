@@ -21,7 +21,9 @@ public:
 
 class TcpPacket {
 public:
-    TcpPacket() = default;
+    TcpPacket();
+    
+    ~TcpPacket();
 
     uint64_t pkt_id();
 
@@ -29,7 +31,7 @@ public:
 
 public:
     uint64_t id;
-    ip *ip;
+    ip *iphdr;
     tcphdr *hdr;
     std::vector<u_char> payload;
 };

@@ -3,6 +3,7 @@
 
 #include <deque>
 #include <vector>
+#include <memory>
 
 #include "packet.h"
 
@@ -12,14 +13,14 @@ public:
 
     ~Message();
 
-    void add(TcpPacket &tcp_pkt);
+    void add(std::shared_ptr<TcpPacket> &tcp_pkt);
 
     std::vector<u_char> data();
 
     std::vector<std::vector<u_char>> packet_data();
 
 public:
-    std::deque<TcpPacket> packets;
+    std::deque<std::shared_ptr<TcpPacket>> packets;
 };
 
 #endif

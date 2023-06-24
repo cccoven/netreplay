@@ -4,4 +4,6 @@ OutputStdout::OutputStdout() {}
 
 OutputStdout::~OutputStdout() {}
 
-void OutputStdout::write(RawMessage &msg) {}
+void OutputStdout::write(RawMessage &msg) {
+    
+}

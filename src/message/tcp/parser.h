@@ -10,7 +10,7 @@
 
 #include "message.h"
 #include "packet.h"
-#include "../../util/shared_resource.h"
+#include "../../util/shared_resource.hpp"
 
 class Parser {
 public:
@@ -20,11 +20,11 @@ public:
 
     void packet_handler(std::shared_ptr<RawPacket> &pkt);
 
-    TcpPacket parse_packet(std::shared_ptr<RawPacket> &pkt);
+    std::shared_ptr<TcpPacket> parse_packet(std::shared_ptr<RawPacket> &pkt);
 
-    void process_packet(TcpPacket &tcp_pkt);
+    void process_packet(std::shared_ptr<TcpPacket> &tcp_pkt);
 
-    void add_packet(std::shared_ptr<Message> &msg, TcpPacket &tcp_pkt);
+    void add_packet(std::shared_ptr<Message> &msg, std::shared_ptr<TcpPacket> &tcp_pkt);
 
     void emit(std::shared_ptr<Message> &msg);
 

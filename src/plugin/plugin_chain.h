@@ -2,17 +2,24 @@
 #define NETREPLAY_PLUGIN_CHAIN_H
 
 #include <vector>
+#include <iostream>
 
 #include "../settings.h"
 
-struct RawMessage {
-    unsigned char *data;
-    unsigned char *meta;
+class RawMessage {
+public:
+    ~RawMessage() {
+        std::cout << "RawMessage destructor" << std::endl;
+    }
+
+public:
+    std::vector<u_char> data;
+    std::vector<u_char> meta;
 };
 
 class InPlugin {
 public:
-    virtual RawMessage &read() = 0;
+    virtual RawMessage read() = 0;
 };
 
 class OutPlugin {

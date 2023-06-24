@@ -10,7 +10,7 @@
 #include <pcap.h>
 
 #include "../message/tcp/message.h"
-#include "../util/shared_resource.h"
+#include "../util/shared_resource.hpp"
 
 struct pcap_option {
     int timeout;

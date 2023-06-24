@@ -5,7 +5,7 @@
 
 #include "plugin_chain.h"
 #include "../settings.h"
-#include "../util/shared_resource.h"
+#include "../util/shared_resource.hpp"
 
 class InputCap : public InPlugin {
 public:
@@ -13,7 +13,7 @@ public:
 
     ~InputCap();
 
-    virtual RawMessage &read();
+    virtual RawMessage read();
 
 private:
     void start_cap();
