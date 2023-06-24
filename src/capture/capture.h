@@ -5,9 +5,12 @@
 #include <vector>
 #include <map>
 #include <string>
+#include <mutex>
+#include <condition_variable>
 #include <pcap.h>
 
 #include "../message/tcp/message.h"
+#include "../util/shared_resource.h"
 
 struct pcap_option {
     int timeout;
@@ -26,7 +29,7 @@ struct pkt_handle {
 
 class Capturer {
 public:
-    Capturer(const std::string &hst, const uint16_t &pt, pcap_option &option);
+    Capturer(SharedResource &shared_resource, const std::string &hst, const uint16_t &pt, pcap_option &option);
 
     ~Capturer();
 
@@ -35,6 +38,8 @@ public:
     void prepare_handles();
 
     void start();
+
+    std::shared_ptr<Message> message();
 
 private:
     std::string build_filter_text();
@@ -51,6 +56,7 @@ public:
     pcap_option config;
     pcap_if_t *net_dev;
     std::map<std::string, pkt_handle> handles;
+    SharedResource &shared_resource;
 };
 
 #endif

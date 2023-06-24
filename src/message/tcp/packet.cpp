@@ -6,15 +6,15 @@
 
 RawPacket::RawPacket(int lt, int ls, pcap_pkthdr *hdr, const u_char *pktdata) : link_type(lt), link_size(ls) {
     pkthdr = new pcap_pkthdr;
-    data = new u_char[hdr->caplen];
     std::memcpy(pkthdr, hdr, sizeof(pcap_pkthdr));
-    std::memcpy(data, pktdata, hdr->caplen);
+    for (int i = 0; i < hdr->caplen; ++i) {
+        data.push_back(pktdata[i]);
+    }
 }
 
 RawPacket::~RawPacket() {
-    // std::cout << "RawPacket destructor" << std::endl;
+    std::cout << "RawPacket destructor" << std::endl;
     delete pkthdr;
-    delete[] data;
 }
 
 uint64_t TcpPacket::pkt_id() {
@@ -28,5 +28,5 @@ uint64_t TcpPacket::pkt_id() {
 }
 
 bool TcpPacket::empty() const {
-    return payload_size == 0;
+    return payload.empty();
 }

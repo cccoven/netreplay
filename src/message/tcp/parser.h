@@ -10,10 +10,11 @@
 
 #include "message.h"
 #include "packet.h"
+#include "../../util/shared_resource.h"
 
 class Parser {
 public:
-    explicit Parser(std::deque<std::shared_ptr<Message>> &messages);
+    Parser(SharedResource &sr, std::deque<std::shared_ptr<Message>> &messages);
 
     ~Parser();
 
@@ -31,13 +32,14 @@ private:
     void wait_parse();
 
 public:
-    std::deque<std::shared_ptr<Message>> messages;
+    std::deque<std::shared_ptr<Message>> &messages;
     std::deque<std::shared_ptr<RawPacket>> packets;
     std::map<uint64_t, std::shared_ptr<Message>> m;
 
 private:
     std::mutex mtx;
     std::condition_variable cv;
+    SharedResource &shared_resource;
 };
 
 #endif 

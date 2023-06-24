@@ -3,8 +3,9 @@
 
 #include <memory>
 
-#include "pluginchain.h"
+#include "plugin_chain.h"
 #include "../settings.h"
+#include "../util/shared_resource.h"
 
 class InputCap : public InPlugin {
 public:
@@ -22,6 +23,7 @@ private:
     uint16_t port;
     input_cap_config config;
     std::unique_ptr<Capturer> cap;
+    SharedResource shared_resource;
 };
 
 #endif

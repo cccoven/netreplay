@@ -1,8 +1,9 @@
-#include "pluginchain.h"
+#include <memory>
+#include <iostream>
+
+#include "plugin_chain.h"
 #include "input_cap.h"
 #include "output_stdout.h"
-
-#include <iostream>
 
 PluginChain::PluginChain(Settings &settings) {
     for (const auto &raw: settings.input_cap) {
@@ -11,8 +12,8 @@ PluginChain::PluginChain(Settings &settings) {
     }
 
     if (settings.output_stdout) {
-        OutputStdout output_stdout = OutputStdout();
-        outputs.push_back(&output_stdout);
+        auto output_stdout = std::shared_ptr<OutPlugin>(new OutputStdout);
+        outputs.push_back(output_stdout);
     }
 }
 

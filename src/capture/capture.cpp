@@ -7,7 +7,7 @@
 #include "capture.h"
 #include "../message/tcp/parser.h"
 
-Capturer::Capturer(const std::string &hst, const uint16_t &pt, pcap_option &option) {
+Capturer::Capturer(SharedResource &sr, const std::string &hst, const uint16_t &pt, pcap_option &option) : shared_resource(sr) {
     host = hst;
     if (hst == "localhost") {
         host = "127.0.0.1";
@@ -90,24 +90,11 @@ void Capturer::prepare_handles() {
         std::cout << "dev: " << dev->name << ", bpf filter: " << filter_str << std::endl;
 
         handles.emplace(dev->name, pkt_handle{dev->addresses, handle});
-
-        // for (pcap_addr_t *paddr = dev->addresses; paddr != nullptr; paddr = paddr->next) {
-        //     if (paddr->addr->sa_family == AF_INET) {
-        //         sockaddr_in *sa = (sockaddr_in *) paddr->addr;
-        //         std::cout << dev->name << ", " << "IPv4: " << inet_ntoa(sa->sin_addr) << std::endl;
-        //     }
-        //     if (paddr->addr->sa_family == AF_INET6) {
-        //         sockaddr_in6 *sa = (sockaddr_in6 *) paddr->addr;
-        //         char str[INET6_ADDRSTRLEN];
-        //         std::cout << dev->name << ", " << "IPv6: " << inet_ntop(AF_INET6, &sa->sin6_addr, str, INET6_ADDRSTRLEN)
-        //              << std::endl;
-        //     }
-        // }
     }
 }
 
 void Capturer::read_handle(const std::string &key, pcap_t *handle) {
-    auto parser = std::make_shared<Parser>(messages);
+    auto parser = std::make_shared<Parser>(shared_resource, messages);
 
     int link_size = 14;
     int link_type = pcap_datalink(handle);
@@ -154,4 +141,10 @@ void Capturer::start() {
 void Capturer::close_handle(const std::string &key, pcap_t *handle) {
     pcap_close(handle);
     handles.erase(key);
+}
+
+std::shared_ptr<Message> Capturer::message() {
+    auto msg = messages.front();
+    messages.pop_front();
+    return msg;
 }

@@ -1,7 +1,7 @@
-#ifndef NETREPLAY_PLUGINCHAIN_H
-#define NETREPLAY_PLUGINCHAIN_H
+#ifndef NETREPLAY_PLUGIN_CHAIN_H
+#define NETREPLAY_PLUGIN_CHAIN_H
 
-#include <list>
+#include <vector>
 
 #include "../settings.h"
 
@@ -22,13 +22,15 @@ public:
 
 class PluginChain {
 public:
+    PluginChain() = default;
+
     explicit PluginChain(Settings &settings);
 
     ~PluginChain();
 
 public:
-    std::list<std::shared_ptr<InPlugin>> inputs;
-    std::list<OutPlugin *> outputs;
+    std::vector<std::shared_ptr<InPlugin>> inputs;
+    std::vector<std::shared_ptr<OutPlugin>> outputs;
 };
 
 #endif
