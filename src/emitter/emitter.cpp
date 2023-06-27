@@ -14,17 +14,14 @@ void Emitter::start() {
     }
 }
 
-void Emitter::deliver_multiple(std::shared_ptr<InPlugin> &in, std::vector<std::shared_ptr<OutPlugin>> &outputs) {
+[[noreturn]] void Emitter::deliver_multiple(std::shared_ptr<InPlugin> &in, std::vector<std::shared_ptr<OutPlugin>> &outputs) {
     while (true) {
-        RawMessage msg = in->read();
-        std::cout << "msg.data.size = " << msg.data.size() << std::endl;
-
+        std::shared_ptr<RawMessage> msg = in->read();
+        
         for (auto &out: outputs) {
             out->write(msg);
         }
     }
 }
 
-void Emitter::close() {
-
-}
+void Emitter::close() {}

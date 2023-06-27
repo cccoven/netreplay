@@ -29,7 +29,7 @@ struct pkt_handle {
 
 class Capturer {
 public:
-    Capturer(SharedResource &shared_resource, const std::string &hst, const uint16_t &pt, pcap_option &option);
+    Capturer(SharedResource &shared_resource, const std::string &hst, const std::uint16_t &pt, pcap_option &option);
 
     ~Capturer();
 
@@ -50,7 +50,7 @@ private:
 
 public:
     std::string host;
-    uint16_t port;
+    std::uint16_t port;
     std::string transport;
     std::deque<std::shared_ptr<Message>> messages;
     pcap_option config;

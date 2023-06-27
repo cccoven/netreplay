@@ -13,14 +13,14 @@ public:
 
     ~InputCap();
 
-    virtual RawMessage read();
+    std::shared_ptr<RawMessage> read() override;
 
 private:
     void start_cap();
 
 private:
     std::string host;
-    uint16_t port;
+    std::uint16_t port;
     input_cap_config config;
     std::unique_ptr<Capturer> cap;
     SharedResource shared_resource;

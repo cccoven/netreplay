@@ -11,7 +11,7 @@ public:
 
     void start();
 
-    static void deliver_multiple(std::shared_ptr<InPlugin> &in, std::vector<std::shared_ptr<OutPlugin>> &outputs);
+    [[noreturn]] static void deliver_multiple(std::shared_ptr<InPlugin> &in, std::vector<std::shared_ptr<OutPlugin>> &outputs);
 
     void close();
 

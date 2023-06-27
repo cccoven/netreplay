@@ -7,7 +7,7 @@
 
 #include "parser.h"
 
-void Parser::wait_parse() {
+[[noreturn]] void Parser::wait_parse() {
     while (true) {
         std::unique_lock<std::mutex> lock(mtx);
         cv.wait(lock, [this] { return !packets.empty(); });
@@ -52,23 +52,12 @@ std::shared_ptr<TcpPacket> Parser::parse_packet(std::shared_ptr<RawPacket> &pkt)
     std::memcpy(tcp_pkt->hdr, (tcphdr *) (pkt->data.data() + pkt->link_size + ip_size), sizeof(tcphdr));
 
     int tcp_hdr_size = tcp_pkt->hdr->th_off * 4;
-    u_char *u_payload = pkt->data.data() + pkt->link_size + ip_size + tcp_hdr_size;
-    uint32_t payload_size = pkt->pkthdr->len - (pkt->link_size + ip_size + tcp_hdr_size);
+    unsigned char *u_payload = pkt->data.data() + pkt->link_size + ip_size + tcp_hdr_size;
+    std::uint32_t payload_size = pkt->pkthdr->len - (pkt->link_size + ip_size + tcp_hdr_size);
 
     for (int i = 0; i < payload_size; ++i) {
         tcp_pkt->payload.push_back(u_payload[i]);
     }
-
-    std::cout << inet_ntoa(tcp_pkt->iphdr->ip_src)
-              << ":"
-              << ntohs(tcp_pkt->hdr->th_sport)
-              << " >>>>>>>>>>>> "
-              << inet_ntoa(tcp_pkt->iphdr->ip_dst)
-              << ":"
-              << ntohs(tcp_pkt->hdr->th_dport)
-              << " - payload size: "
-              << tcp_pkt->payload.size()
-              << std::endl;
 
     return tcp_pkt;
 }

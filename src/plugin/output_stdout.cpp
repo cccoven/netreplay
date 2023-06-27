@@ -1,9 +1,7 @@
+#include <iostream>
+
 #include "output_stdout.h"
 
-OutputStdout::OutputStdout() {}
-
-OutputStdout::~OutputStdout() {}
-
-void OutputStdout::write(RawMessage &msg) {
-    
+void OutputStdout::write(std::shared_ptr<RawMessage> &msg) {
+    std::cout << msg->data.data() << std::endl;
 }

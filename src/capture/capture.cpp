@@ -7,7 +7,8 @@
 #include "capture.h"
 #include "../message/tcp/parser.h"
 
-Capturer::Capturer(SharedResource &sr, const std::string &hst, const uint16_t &pt, pcap_option &option) : shared_resource(sr) {
+Capturer::Capturer(SharedResource &sr, const std::string &hst, const std::uint16_t &pt, pcap_option &option)
+        : shared_resource(sr) {
     host = hst;
     if (hst == "localhost") {
         host = "127.0.0.1";
@@ -26,7 +27,6 @@ Capturer::Capturer(SharedResource &sr, const std::string &hst, const uint16_t &p
 }
 
 Capturer::~Capturer() {
-    std::cout << "Capturer destructor" << std::endl;
     pcap_freealldevs(net_dev);
     net_dev = nullptr;
 }

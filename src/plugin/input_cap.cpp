@@ -5,7 +5,7 @@
 #include "../util/util.hpp"
 
 InputCap::InputCap(const std::string &addr, const input_cap_config &cap_config) {
-    std::pair<std::string, uint16_t> host_port = Util::split_host_port(addr);
+    std::pair<std::string, std::uint16_t> host_port = Util::split_host_port(addr);
     host = host_port.first;
     port = host_port.second;
     config = cap_config;
@@ -14,21 +14,18 @@ InputCap::InputCap(const std::string &addr, const input_cap_config &cap_config) 
     start_cap();
 }
 
-InputCap::~InputCap() {
-    std::cout << "InputCap destructor" << std::endl;
-}
+InputCap::~InputCap() {}
 
-RawMessage InputCap::read() {
+std::shared_ptr<RawMessage> InputCap::read() {
     std::unique_lock<std::mutex> lock(shared_resource.get_mutex());
     shared_resource.get_condition_var().wait(lock, [this] { return !cap->messages.empty(); });
 
     std::shared_ptr<Message> tcp_msg = cap->message();
-    std::vector<u_char> data = tcp_msg->data();
+    std::vector<unsigned char> data = tcp_msg->data();
 
-    RawMessage msg;
-    msg.data = data;
+    auto msg = std::make_shared<RawMessage>(data);
 
-    return msg;
+    return std::move(msg);
 }
 
 void InputCap::start_cap() {

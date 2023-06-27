@@ -5,11 +5,11 @@
 
 class OutputStdout : public OutPlugin {
 public:
-    OutputStdout();
+    OutputStdout() = default;
 
-    ~OutputStdout();
+    ~OutputStdout() = default;
 
-    virtual void write(RawMessage &msg);
+    void write(std::shared_ptr<RawMessage> &msg) override;
 };
 
 #endif

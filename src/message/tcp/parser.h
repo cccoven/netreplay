@@ -29,12 +29,12 @@ public:
     void emit(std::shared_ptr<Message> &msg);
 
 private:
-    void wait_parse();
+    [[noreturn]] void wait_parse();
 
 public:
     std::deque<std::shared_ptr<Message>> &messages;
     std::deque<std::shared_ptr<RawPacket>> packets;
-    std::map<uint64_t, std::shared_ptr<Message>> m;
+    std::map<std::uint64_t, std::shared_ptr<Message>> m;
 
 private:
     std::mutex mtx;

@@ -3,28 +3,31 @@
 
 #include <vector>
 #include <iostream>
+#include <memory>
 
 #include "../settings.h"
 
 class RawMessage {
 public:
-    ~RawMessage() {
-        std::cout << "RawMessage destructor" << std::endl;
-    }
+    RawMessage(std::vector<unsigned char> &data);
+
+    RawMessage(std::vector<unsigned char> &data, std::vector<unsigned char> &meta);
+
+    ~RawMessage() = default;
 
 public:
-    std::vector<u_char> data;
-    std::vector<u_char> meta;
+    std::vector<unsigned char> data;
+    std::vector<unsigned char> meta;
 };
 
 class InPlugin {
 public:
-    virtual RawMessage read() = 0;
+    virtual std::shared_ptr<RawMessage> read() = 0;
 };
 
 class OutPlugin {
 public:
-    virtual void write(RawMessage &msg) = 0;
+    virtual void write(std::shared_ptr<RawMessage> &msg) = 0;
 };
 
 class PluginChain {
